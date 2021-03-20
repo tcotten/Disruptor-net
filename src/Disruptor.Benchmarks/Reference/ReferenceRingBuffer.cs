@@ -2,15 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Disruptor
+namespace Disruptor.Benchmarks.Reference
 {
-    /// <summary>
-    /// Base type for array-backed ring buffers.
-    ///
-    /// <see cref="RingBuffer{T}"/> and <see cref="ValueRingBuffer{T}"/>.
-    /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 148)]
-    public abstract class RingBuffer : ICursored
+    public abstract class ReferenceRingBuffer : ICursored
     {
         protected static readonly int _bufferPadRef = Util.GetRingBufferPaddingEventCount(IntPtr.Size);
 
@@ -20,7 +15,7 @@ namespace Disruptor
         protected object _entries;
 
         [FieldOffset(64)]
-        protected int _indexMask;
+        protected long _indexMask;
 
         [FieldOffset(72)]
         protected int _bufferSize;
@@ -31,13 +26,13 @@ namespace Disruptor
         // padding: 52
 
         /// <summary>
-        /// Construct a RingBuffer with the full option set.
+        /// Construct a ReferenceRingBuffer with the full option set.
         /// </summary>
-        /// <param name="sequencer">sequencer to handle the ordering of events moving through the RingBuffer.</param>
+        /// <param name="sequencer">sequencer to handle the ordering of events moving through the ReferenceRingBuffer.</param>
         /// <param name="eventType">type of ring buffer events</param>
         /// <param name="bufferPad">ring buffer padding  as a number of events</param>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        protected RingBuffer(ISequencer sequencer, Type eventType, int bufferPad)
+        protected ReferenceRingBuffer(ISequencer sequencer, Type eventType, int bufferPad)
         {
             _sequencerDispatcher = new SequencerDispatcher(sequencer);
             _bufferSize = sequencer.BufferSize;
@@ -87,14 +82,14 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// long sequence = ringBuffer.Next();
+        /// long sequence = ReferenceRingBuffer.Next();
         /// try
         /// {
-        ///     // Do some work with ringBuffer[sequence];
+        ///     // Do some work with ReferenceRingBuffer[sequence];
         /// }
         /// finally
         /// {
-        ///     ringBuffer.Publish(sequence);
+        ///     ReferenceRingBuffer.Publish(sequence);
         /// }
         /// </code>
         /// </para>
@@ -120,18 +115,18 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// long hi = ringBuffer.Next(_batchSize);
+        /// long hi = ReferenceRingBuffer.Next(_batchSize);
         /// long lo = hi - _batchSize + 1;
         /// try
         /// {
         ///     for (long s = lo; s &lt;= hi; s++)
         ///     {
-        ///         // Do some work with ringBuffer[s];
+        ///         // Do some work with ReferenceRingBuffer[s];
         ///     }
         /// }
         /// finally
         /// {
-        ///     ringBuffer.Publish(lo, hi);
+        ///     ReferenceRingBuffer.Publish(lo, hi);
         /// }
         /// </code>
         /// </para>
@@ -162,18 +157,18 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// if (!ringBuffer.TryNext(out var sequence))
+        /// if (!ReferenceRingBuffer.TryNext(out var sequence))
         /// {
         ///     // Handle full ring buffer
         ///     return;
         /// }
         /// try
         /// {
-        ///     // Do some work with ringBuffer[sequence];
+        ///     // Do some work with ReferenceRingBuffer[sequence];
         /// }
         /// finally
         /// {
-        ///     ringBuffer.Publish(sequence);
+        ///     ReferenceRingBuffer.Publish(sequence);
         /// }
         /// </code>
         /// </para>
@@ -199,7 +194,7 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// if (!ringBuffer.TryNext(_batchSize, out var hi))
+        /// if (!ReferenceRingBuffer.TryNext(_batchSize, out var hi))
         /// {
         ///     // Handle full ring buffer
         ///     return;
@@ -209,12 +204,12 @@ namespace Disruptor
         /// {
         ///     for (long s = lo; s &lt;= hi; s++)
         ///     {
-        ///         // Do some work with ringBuffer[s];
+        ///         // Do some work with ReferenceRingBuffer[s];
         ///     }
         /// }
         /// finally
         /// {
-        ///     ringBuffer.Publish(lo, hi);
+        ///     ReferenceRingBuffer.Publish(lo, hi);
         /// }
         /// </code>
         /// </para>
@@ -259,7 +254,7 @@ namespace Disruptor
 
         /// <summary>
         /// Get the minimum sequence value from all of the gating sequences
-        /// added to this ringBuffer.
+        /// added to this ReferenceRingBuffer.
         /// </summary>
         /// <returns>the minimum gating sequence or the cursor sequence if no sequences have been added.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -269,7 +264,7 @@ namespace Disruptor
         }
 
         /// <summary>
-        /// Remove the specified sequence from this ringBuffer.
+        /// Remove the specified sequence from this ReferenceRingBuffer.
         /// </summary>
         /// <param name="sequence">sequence to be removed.</param>
         /// <returns><c>true</c> if this sequence was found, <c>false</c> otherwise.</returns>
@@ -319,7 +314,7 @@ namespace Disruptor
         }
 
         /// <summary>
-        /// Get the remaining capacity for this ringBuffer.
+        /// Get the remaining capacity for this ReferenceRingBuffer.
         /// </summary>
         /// <returns>The number of slots remaining.</returns>
         public long GetRemainingCapacity()

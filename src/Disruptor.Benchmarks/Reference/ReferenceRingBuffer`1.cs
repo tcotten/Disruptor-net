@@ -2,23 +2,18 @@
 using System.Runtime.CompilerServices;
 using Disruptor.Dsl;
 
-namespace Disruptor
+namespace Disruptor.Benchmarks.Reference
 {
-    /// <summary>
-    /// Ring based store of reusable entries containing the data representing
-    /// an event being exchanged between event producer and <see cref="IEventProcessor"/>s.
-    /// </summary>
-    /// <typeparam name="T">implementation storing the data for sharing during exchange or parallel coordination of an event.</typeparam>
-    public sealed class RingBuffer<T> : RingBuffer, IEventSequencer<T>
+    public sealed class ReferenceRingBuffer<T> : ReferenceRingBuffer, IEventSequencer<T>
         where T : class
     {
         /// <summary>
-        /// Construct a RingBuffer with the full option set.
+        /// Construct a ReferenceRingBuffer with the full option set.
         /// </summary>
-        /// <param name="eventFactory">eventFactory to create entries for filling the RingBuffer</param>
-        /// <param name="sequencer">sequencer to handle the ordering of events moving through the RingBuffer.</param>
+        /// <param name="eventFactory">eventFactory to create entries for filling the ReferenceRingBuffer</param>
+        /// <param name="sequencer">sequencer to handle the ordering of events moving through the ReferenceRingBuffer.</param>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        public RingBuffer(Func<T> eventFactory, ISequencer sequencer)
+        public ReferenceRingBuffer(Func<T> eventFactory, ISequencer sequencer)
         : base(sequencer, typeof(T), _bufferPadRef)
         {
             Fill(eventFactory);
@@ -34,65 +29,65 @@ namespace Disruptor
         }
 
         /// <summary>
-        /// Construct a RingBuffer with a <see cref="MultiProducerSequencer"/> sequencer.
+        /// Construct a ReferenceRingBuffer with a <see cref="MultiProducerSequencer"/> sequencer.
         /// </summary>
-        /// <param name="eventFactory"> eventFactory to create entries for filling the RingBuffer</param>
+        /// <param name="eventFactory"> eventFactory to create entries for filling the ReferenceRingBuffer</param>
         /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
-        public RingBuffer(Func<T> eventFactory, int bufferSize)
+        public ReferenceRingBuffer(Func<T> eventFactory, int bufferSize)
             : this(eventFactory, new MultiProducerSequencer(bufferSize))
         {
         }
 
         /// <summary>
-        /// Create a new multiple producer RingBuffer with the specified wait strategy.
+        /// Create a new multiple producer ReferenceRingBuffer with the specified wait strategy.
         /// </summary>
         /// <param name="factory">used to create the events within the ring buffer.</param>
         /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
         /// <param name="waitStrategy">used to determine how to wait for new elements to become available.</param>
         /// <returns>a constructed ring buffer.</returns>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        public static RingBuffer<T> CreateMultiProducer(Func<T> factory, int bufferSize, IWaitStrategy waitStrategy)
+        public static ReferenceRingBuffer<T> CreateMultiProducer(Func<T> factory, int bufferSize, IWaitStrategy waitStrategy)
         {
             MultiProducerSequencer sequencer = new MultiProducerSequencer(bufferSize, waitStrategy);
 
-            return new RingBuffer<T>(factory, sequencer);
+            return new ReferenceRingBuffer<T>(factory, sequencer);
         }
 
         /// <summary>
-        /// Create a new multiple producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
+        /// Create a new multiple producer ReferenceRingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
         /// </summary>
         /// <param name="factory">used to create the events within the ring buffer.</param>
         /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
         /// <returns>a constructed ring buffer.</returns>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        public static RingBuffer<T> CreateMultiProducer(Func<T> factory, int bufferSize)
+        public static ReferenceRingBuffer<T> CreateMultiProducer(Func<T> factory, int bufferSize)
         {
             return CreateMultiProducer(factory, bufferSize, SequencerFactory.DefaultWaitStrategy());
         }
 
         /// <summary>
-        /// Create a new single producer RingBuffer with the specified wait strategy.
+        /// Create a new single producer ReferenceRingBuffer with the specified wait strategy.
         /// </summary>
         /// <param name="factory">used to create the events within the ring buffer.</param>
         /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
         /// <param name="waitStrategy">used to determine how to wait for new elements to become available.</param>
         /// <returns>a constructed ring buffer.</returns>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        public static RingBuffer<T> CreateSingleProducer(Func<T> factory, int bufferSize, IWaitStrategy waitStrategy)
+        public static ReferenceRingBuffer<T> CreateSingleProducer(Func<T> factory, int bufferSize, IWaitStrategy waitStrategy)
         {
             SingleProducerSequencer sequencer = new SingleProducerSequencer(bufferSize, waitStrategy);
 
-            return new RingBuffer<T>(factory, sequencer);
+            return new ReferenceRingBuffer<T>(factory, sequencer);
         }
 
         /// <summary>
-        /// Create a new single producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
+        /// Create a new single producer ReferenceRingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
         /// </summary>
         /// <param name="factory">used to create the events within the ring buffer.</param>
         /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
         /// <returns>a constructed ring buffer.</returns>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        public static RingBuffer<T> CreateSingleProducer(Func<T> factory, int bufferSize)
+        public static ReferenceRingBuffer<T> CreateSingleProducer(Func<T> factory, int bufferSize)
         {
             return CreateSingleProducer(factory, bufferSize, new BlockingWaitStrategy());
         }
@@ -107,7 +102,7 @@ namespace Disruptor
         /// <returns>a constructed ring buffer.</returns>
         /// <exception cref="ArgumentOutOfRangeException">if the producer type is invalid</exception>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        public static RingBuffer<T> Create(ProducerType producerType, Func<T> factory, int bufferSize, IWaitStrategy waitStrategy)
+        public static ReferenceRingBuffer<T> Create(ProducerType producerType, Func<T> factory, int bufferSize, IWaitStrategy waitStrategy)
         {
             switch (producerType)
             {
@@ -121,11 +116,11 @@ namespace Disruptor
         }
 
         /// <summary>
-        /// Get the event for a given sequence in the RingBuffer.
+        /// Get the event for a given sequence in the ReferenceRingBuffer.
         ///
         /// This call has 2 uses.  Firstly use this call when publishing to a ring buffer.
-        /// After calling <see cref="RingBuffer.Next()"/> use this call to get hold of the
-        /// preallocated event to fill with data before calling <see cref="RingBuffer.Publish(long)"/>.
+        /// After calling <see cref="ReferenceRingBuffer.Next()"/> use this call to get hold of the
+        /// preallocated event to fill with data before calling <see cref="ReferenceRingBuffer.Publish(long)"/>.
         ///
         /// Secondly use this call when consuming data from the ring buffer.  After calling
         /// <see cref="ISequenceBarrier.WaitFor"/> call this method with any value greater than
@@ -139,7 +134,7 @@ namespace Disruptor
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return Util.Read<T>(_entries, _bufferPadRef + (((int)sequence) & _indexMask));
+                return Util.Read<T>(_entries, _bufferPadRef + (int)(sequence & _indexMask));
             }
         }
 
@@ -158,7 +153,7 @@ namespace Disruptor
 
         public override string ToString()
         {
-            return $"RingBuffer {{Type={typeof(T).Name}, BufferSize={_bufferSize}, Sequencer={_sequencerDispatcher.Sequencer.GetType().Name}}}";
+            return $"ReferenceRingBuffer {{Type={typeof(T).Name}, BufferSize={_bufferSize}, Sequencer={_sequencerDispatcher.Sequencer.GetType().Name}}}";
         }
 
         /// <summary>
@@ -195,7 +190,7 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// using (var scope = _ringBuffer.PublishEvent())
+        /// using (var scope = _ReferenceRingBuffer.PublishEvent())
         /// {
         ///     var e = scope.Event();
         ///     // Do some work with the event.
@@ -220,7 +215,7 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// using (var scope = _ringBuffer.TryPublishEvent())
+        /// using (var scope = _ReferenceRingBuffer.TryPublishEvent())
         /// {
         ///     if (!scope.TryGetEvent(out var eventRef))
         ///         return;
@@ -249,7 +244,7 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// using (var scope = _ringBuffer.PublishEvents(2))
+        /// using (var scope = _ReferenceRingBuffer.PublishEvents(2))
         /// {
         ///     var e1 = scope.Event(0);
         ///     var e2 = scope.Event(1);
@@ -275,7 +270,7 @@ namespace Disruptor
         /// <para>
         /// Example:
         /// <code>
-        /// using (var scope = _ringBuffer.TryPublishEvent(2))
+        /// using (var scope = _ReferenceRingBuffer.TryPublishEvent(2))
         /// {
         ///     if (!scope.TryGetEvents(out var eventsRef))
         ///         return;
@@ -300,12 +295,12 @@ namespace Disruptor
         /// </summary>
         public readonly struct UnpublishedEventScope : IDisposable
         {
-            private readonly RingBuffer<T> _ringBuffer;
+            private readonly ReferenceRingBuffer<T> _ReferenceRingBuffer;
             private readonly long _sequence;
 
-            public UnpublishedEventScope(RingBuffer<T> ringBuffer, long sequence)
+            public UnpublishedEventScope(ReferenceRingBuffer<T> ReferenceRingBuffer, long sequence)
             {
-                _ringBuffer = ringBuffer;
+                _ReferenceRingBuffer = ReferenceRingBuffer;
                 _sequence = sequence;
             }
 
@@ -315,13 +310,13 @@ namespace Disruptor
             /// Gets the event at the claimed sequence number.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public T Event() => _ringBuffer[_sequence];
+            public T Event() => _ReferenceRingBuffer[_sequence];
 
             /// <summary>
             /// Publishes the sequence number.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void Dispose() => _ringBuffer.Publish(_sequence);
+            public void Dispose() => _ReferenceRingBuffer.Publish(_sequence);
         }
 
         /// <summary>
@@ -330,13 +325,13 @@ namespace Disruptor
         /// </summary>
         public readonly struct UnpublishedEventBatchScope : IDisposable
         {
-            private readonly RingBuffer<T> _ringBuffer;
+            private readonly ReferenceRingBuffer<T> _ReferenceRingBuffer;
             private readonly long _startSequence;
             private readonly long _endSequence;
 
-            public UnpublishedEventBatchScope(RingBuffer<T> ringBuffer, long startSequence, long endSequence)
+            public UnpublishedEventBatchScope(ReferenceRingBuffer<T> ReferenceRingBuffer, long startSequence, long endSequence)
             {
-                _ringBuffer = ringBuffer;
+                _ReferenceRingBuffer = ReferenceRingBuffer;
                 _startSequence = startSequence;
                 _endSequence = endSequence;
             }
@@ -348,13 +343,13 @@ namespace Disruptor
             /// Gets the event at the specified index in the claimed sequence batch.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public T Event(int index) => _ringBuffer[_startSequence + index];
+            public T Event(int index) => _ReferenceRingBuffer[_startSequence + index];
 
             /// <summary>
             /// Publishes the sequence number batch.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void Dispose() => _ringBuffer.Publish(_startSequence, _endSequence);
+            public void Dispose() => _ReferenceRingBuffer.Publish(_startSequence, _endSequence);
         }
 
         /// <summary>
@@ -363,19 +358,19 @@ namespace Disruptor
         /// </summary>
         public readonly struct NullableUnpublishedEventScope : IDisposable
         {
-            private readonly RingBuffer<T> _ringBuffer;
+            private readonly ReferenceRingBuffer<T> _ReferenceRingBuffer;
             private readonly long _sequence;
 
-            public NullableUnpublishedEventScope(RingBuffer<T> ringBuffer, long sequence)
+            public NullableUnpublishedEventScope(ReferenceRingBuffer<T> ReferenceRingBuffer, long sequence)
             {
-                _ringBuffer = ringBuffer;
+                _ReferenceRingBuffer = ReferenceRingBuffer;
                 _sequence = sequence;
             }
 
             /// <summary>
             /// Returns a value indicating whether the sequence was successfully claimed.
             /// </summary>
-            public bool HasEvent => _ringBuffer != null;
+            public bool HasEvent => _ReferenceRingBuffer != null;
 
             /// <summary>
             /// Gets the event at the claimed sequence number.
@@ -386,8 +381,8 @@ namespace Disruptor
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool TryGetEvent(out EventRef eventRef)
             {
-                eventRef = new EventRef(_ringBuffer, _sequence);
-                return _ringBuffer != null;
+                eventRef = new EventRef(_ReferenceRingBuffer, _sequence);
+                return _ReferenceRingBuffer != null;
             }
 
             /// <summary>
@@ -396,8 +391,8 @@ namespace Disruptor
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose()
             {
-                if (_ringBuffer != null)
-                    _ringBuffer.Publish(_sequence);
+                if (_ReferenceRingBuffer != null)
+                    _ReferenceRingBuffer.Publish(_sequence);
             }
         }
 
@@ -406,12 +401,12 @@ namespace Disruptor
         /// </summary>
         public readonly struct EventRef
         {
-            private readonly RingBuffer<T> _ringBuffer;
+            private readonly ReferenceRingBuffer<T> _ReferenceRingBuffer;
             private readonly long _sequence;
 
-            public EventRef(RingBuffer<T> ringBuffer, long sequence)
+            public EventRef(ReferenceRingBuffer<T> ReferenceRingBuffer, long sequence)
             {
-                _ringBuffer = ringBuffer;
+                _ReferenceRingBuffer = ReferenceRingBuffer;
                 _sequence = sequence;
             }
 
@@ -421,7 +416,7 @@ namespace Disruptor
             /// Gets the event at the claimed sequence number.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public T Event() => _ringBuffer[_sequence];
+            public T Event() => _ReferenceRingBuffer[_sequence];
         }
 
         /// <summary>
@@ -430,13 +425,13 @@ namespace Disruptor
         /// </summary>
         public readonly struct NullableUnpublishedEventBatchScope : IDisposable
         {
-            private readonly RingBuffer<T> _ringBuffer;
+            private readonly ReferenceRingBuffer<T> _ReferenceRingBuffer;
             private readonly long _startSequence;
             private readonly long _endSequence;
 
-            public NullableUnpublishedEventBatchScope(RingBuffer<T> ringBuffer, long startSequence, long endSequence)
+            public NullableUnpublishedEventBatchScope(ReferenceRingBuffer<T> ReferenceRingBuffer, long startSequence, long endSequence)
             {
-                _ringBuffer = ringBuffer;
+                _ReferenceRingBuffer = ReferenceRingBuffer;
                 _startSequence = startSequence;
                 _endSequence = endSequence;
             }
@@ -444,7 +439,7 @@ namespace Disruptor
             /// <summary>
             /// Returns a value indicating whether the sequence batch was successfully claimed.
             /// </summary>
-            public bool HasEvents => _ringBuffer != null;
+            public bool HasEvents => _ReferenceRingBuffer != null;
 
             /// <summary>
             /// Gets the events for the associated sequence number batch.
@@ -455,8 +450,8 @@ namespace Disruptor
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool TryGetEvents(out EventBatchRef eventRef)
             {
-                eventRef = new EventBatchRef(_ringBuffer, _startSequence, _endSequence);
-                return _ringBuffer != null;
+                eventRef = new EventBatchRef(_ReferenceRingBuffer, _startSequence, _endSequence);
+                return _ReferenceRingBuffer != null;
             }
 
             /// <summary>
@@ -465,8 +460,8 @@ namespace Disruptor
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Dispose()
             {
-                if (_ringBuffer != null)
-                    _ringBuffer.Publish(_startSequence, _endSequence);
+                if (_ReferenceRingBuffer != null)
+                    _ReferenceRingBuffer.Publish(_startSequence, _endSequence);
             }
         }
 
@@ -475,13 +470,13 @@ namespace Disruptor
         /// </summary>
         public readonly struct EventBatchRef
         {
-            private readonly RingBuffer<T> _ringBuffer;
+            private readonly ReferenceRingBuffer<T> _ReferenceRingBuffer;
             private readonly long _startSequence;
             private readonly long _endSequence;
 
-            public EventBatchRef(RingBuffer<T> ringBuffer, long startSequence, long endSequence)
+            public EventBatchRef(ReferenceRingBuffer<T> ReferenceRingBuffer, long startSequence, long endSequence)
             {
-                _ringBuffer = ringBuffer;
+                _ReferenceRingBuffer = ReferenceRingBuffer;
                 _startSequence = startSequence;
                 _endSequence = endSequence;
             }
@@ -493,7 +488,7 @@ namespace Disruptor
             /// Gets the event at the specified index in the claimed sequence batch.
             /// </summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public T Event(int index) => _ringBuffer[_startSequence + index];
+            public T Event(int index) => _ReferenceRingBuffer[_startSequence + index];
         }
     }
 }
