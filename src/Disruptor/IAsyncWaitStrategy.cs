@@ -1,4 +1,3 @@
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Disruptor;
@@ -15,7 +14,7 @@ public interface IAsyncWaitStrategy : IWaitStrategy
     /// <param name="sequence">sequence to be waited on</param>
     /// <param name="cursor">main sequence from the ring buffer</param>
     /// <param name="dependentSequence">sequence on which to wait</param>
-    /// <param name="cancellationToken">processing cancellation token</param>
+    /// <param name="asyncWaitState">wait state of the caller</param>
     /// <returns>either the sequence that is available (which may be greater than the requested sequence), or a timeout</returns>
-    ValueTask<SequenceWaitResult> WaitForAsync(long sequence, Sequence cursor, ISequence dependentSequence, CancellationToken cancellationToken);
+    ValueTask<SequenceWaitResult> WaitForAsync(long sequence, Sequence cursor, ISequence dependentSequence, AsyncWaitState asyncWaitState);
 }

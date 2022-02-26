@@ -16,37 +16,14 @@ namespace Disruptor;
 /// </remarks>
 public sealed class AsyncWaitStrategy : IAsyncWaitStrategy
 {
-    private readonly List<TaskCompletionSource<bool>> _taskCompletionSources = new();
+    private readonly List<AsyncWaitState> _asyncWaitStates = new();
     private readonly object _gate = new();
-    private readonly int _timeoutMilliseconds;
     private bool _hasSyncWaiter;
-
-    /// <summary>
-    /// Creates an async wait strategy without timeouts.
-    /// </summary>
-    public AsyncWaitStrategy()
-        : this(Timeout.Infinite)
-    {
-    }
-
-    /// <summary>
-    /// Creates an async wait strategy with timeouts.
-    /// </summary>
-    public AsyncWaitStrategy(TimeSpan timeout)
-        : this(ToMilliseconds(timeout))
-    {
-    }
-
-    private AsyncWaitStrategy(int timeoutMilliseconds)
-    {
-        _timeoutMilliseconds = timeoutMilliseconds;
-    }
 
     public bool IsBlockingStrategy => true;
 
     public SequenceWaitResult WaitFor(long sequence, Sequence cursor, ISequence dependentSequence, CancellationToken cancellationToken)
     {
-        var timeout = _timeoutMilliseconds;
         if (cursor.Value < sequence)
         {
             lock (_gate)
@@ -55,7 +32,7 @@ public sealed class AsyncWaitStrategy : IAsyncWaitStrategy
                 while (cursor.Value < sequence)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    var waitSucceeded = Monitor.Wait(_gate, timeout);
+                    var waitSucceeded = Monitor.Wait(_gate);
                     if (!waitSucceeded)
                     {
                         return SequenceWaitResult.Timeout;
@@ -76,71 +53,36 @@ public sealed class AsyncWaitStrategy : IAsyncWaitStrategy
                 Monitor.PulseAll(_gate);
             }
 
-            foreach (var completionSource in _taskCompletionSources)
+            foreach (var asyncWaitState in _asyncWaitStates)
             {
-                completionSource.TrySetResult(true);
+                asyncWaitState.Signal();
             }
-            _taskCompletionSources.Clear();
+            _asyncWaitStates.Clear();
         }
     }
 
-    public async ValueTask<SequenceWaitResult> WaitForAsync(long sequence, Sequence cursor, ISequence dependentSequence, CancellationToken cancellationToken)
+    public ValueTask<SequenceWaitResult> WaitForAsync(long sequence, Sequence cursor, ISequence dependentSequence, AsyncWaitState asyncWaitState)
     {
-        while (cursor.Value < sequence)
+        if (cursor.Value < sequence)
         {
-            var waitSucceeded = await WaitForAsyncImpl(sequence, cursor, cancellationToken).ConfigureAwait(false);
-            if (!waitSucceeded)
+            lock (_gate)
             {
-                return SequenceWaitResult.Timeout;
+                if (cursor.Value < sequence)
+                {
+                    asyncWaitState.ThrowIfCancellationRequested();
+
+                    // Using cancellationToken in the task is not required because SignalAllWhenBlocking is always invoked by
+                    // the sequencer barrier after cancellation.
+
+                    _asyncWaitStates.Add(asyncWaitState);
+
+                    return asyncWaitState.Wait(sequence, dependentSequence);
+                }
             }
         }
 
-        return dependentSequence.AggressiveSpinWaitFor(sequence, cancellationToken);
-    }
+        var availableSequence = asyncWaitState.GetAvailableSequence(sequence, dependentSequence);
 
-    private async ValueTask<bool> WaitForAsyncImpl(long sequence, Sequence cursor, CancellationToken cancellationToken)
-    {
-        TaskCompletionSource<bool> tcs;
-
-        lock (_gate)
-        {
-            if (cursor.Value >= sequence)
-            {
-                return true;
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _taskCompletionSources.Add(tcs);
-        }
-
-        // Using cancellationToken in the await is not required because SignalAllWhenBlocking is always invoked by
-        // the sequencer barrier after cancellation.
-
-        await AddTimeout(tcs.Task).ConfigureAwait(false);
-
-        return tcs.Task.IsCompleted;
-    }
-
-    private Task AddTimeout(Task task)
-    {
-        if (_timeoutMilliseconds == Timeout.Infinite)
-        {
-            return task;
-        }
-
-        return Task.WhenAny(task, Task.Delay(_timeoutMilliseconds));
-    }
-
-    private static int ToMilliseconds(TimeSpan timeout)
-    {
-        var totalMilliseconds = (long)timeout.TotalMilliseconds;
-        if (totalMilliseconds is < 0 or >= int.MaxValue)
-        {
-            throw new ArgumentOutOfRangeException();
-        }
-
-        return (int)totalMilliseconds;
+        return new ValueTask<SequenceWaitResult>(availableSequence);
     }
 }

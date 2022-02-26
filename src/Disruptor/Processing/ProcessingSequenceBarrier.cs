@@ -6,8 +6,11 @@ using JetBrains.Annotations;
 namespace Disruptor.Processing;
 
 /// <summary>
-/// <see cref="ISequenceBarrier"/> handed out for gating <see cref="IEventProcessor"/> on a cursor sequence and optional dependent <see cref="IEventProcessor"/>s,
-///  using the given WaitStrategy.
+/// Coordination barrier for event processors.
+/// While there is a single wait strategy for the ring buffer, each <see cref="IEventProcessor"/> has its own <see cref="ISequenceBarrier"/>.
+///
+/// Used to wait for a cursor sequence (the ring buffer cursor) and optionally a list of dependent sequences (the sequences of the event processors
+/// that are configured to run before the current event processor).
 /// </summary>
 /// <typeparam name="TSequencer">the type of the <see cref="ISequencer"/> used.</typeparam>
 /// <typeparam name="TWaitStrategy">the type of the <see cref="IWaitStrategy"/> used.</typeparam>

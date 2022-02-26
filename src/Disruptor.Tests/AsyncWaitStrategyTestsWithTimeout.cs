@@ -8,9 +8,9 @@ namespace Disruptor.Tests;
 
 public class AsyncWaitStrategyTestsWithTimeout : AsyncWaitStrategyTests
 {
-    protected override AsyncWaitStrategy CreateWaitStrategy()
+    protected override IAsyncWaitStrategy CreateWaitStrategy()
     {
-        return new AsyncWaitStrategy(TimeSpan.FromSeconds(30));
+        return new TimeoutAsyncWaitStrategy(TimeSpan.FromSeconds(30));
     }
 
     [Test]
@@ -18,7 +18,7 @@ public class AsyncWaitStrategyTestsWithTimeout : AsyncWaitStrategyTests
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(400);
-        var waitStrategy = new AsyncWaitStrategy(timeout);
+        var waitStrategy = new TimeoutAsyncWaitStrategy(timeout);
         var waitResult1 = new TaskCompletionSource<SequenceWaitResult>();
         var waitResult2 = new TaskCompletionSource<SequenceWaitResult>();
 
@@ -58,7 +58,7 @@ public class AsyncWaitStrategyTestsWithTimeout : AsyncWaitStrategyTests
     {
         // Arrange
         var timeout = TimeSpan.FromMilliseconds(400);
-        var waitStrategy = new AsyncWaitStrategy(timeout);
+        var waitStrategy = new TimeoutAsyncWaitStrategy(timeout);
         var waitResult1 = new TaskCompletionSource<SequenceWaitResult>();
         var waitResult2 = new TaskCompletionSource<SequenceWaitResult>();
 
@@ -66,14 +66,16 @@ public class AsyncWaitStrategyTestsWithTimeout : AsyncWaitStrategyTests
         var dependentSequence2 = new Sequence();
         var stopwatch = Stopwatch.StartNew();
 
+        var asyncWaitState1 = new AsyncWaitState(CancellationToken);
         var waitTask1 = Task.Run(async () =>
         {
-            waitResult1.SetResult(await waitStrategy.WaitForAsync(10, Cursor, dependentSequence1, CancellationToken));
+            waitResult1.SetResult(await waitStrategy.WaitForAsync(10, Cursor, dependentSequence1, asyncWaitState1));
             Thread.Sleep(1);
             dependentSequence2.SetValue(10);
         });
 
-        var waitTask2 = Task.Run(async () => waitResult2.SetResult(await waitStrategy.WaitForAsync(10, Cursor, dependentSequence2, CancellationToken)));
+        var asyncWaitState2 = new AsyncWaitState(CancellationToken);
+        var waitTask2 = Task.Run(async () => waitResult2.SetResult(await waitStrategy.WaitForAsync(10, Cursor, dependentSequence2, asyncWaitState2)));
 
         // Ensure waiting tasks are blocked
         AssertIsNotCompleted(waitResult1.Task);

@@ -22,7 +22,8 @@ internal struct AsyncProcessingSequenceBarrier<TSequencer, TWaitStrategy> : IAsy
 
     private readonly ISequence _dependentSequence;
     private readonly Sequence _cursorSequence;
-    private volatile CancellationTokenSource _cancellationTokenSource;
+    private CancellationTokenSource _cancellationTokenSource;
+    private AsyncWaitState _asyncWaitState;
 
     [UsedImplicitly]
     public AsyncProcessingSequenceBarrier(TSequencer sequencer, TWaitStrategy waitStrategy, Sequence cursorSequence, ISequence[] dependentSequences)
@@ -32,6 +33,7 @@ internal struct AsyncProcessingSequenceBarrier<TSequencer, TWaitStrategy> : IAsy
         _cursorSequence = cursorSequence;
         _dependentSequence = SequenceGroups.CreateReadOnlySequence(cursorSequence, dependentSequences);
         _cancellationTokenSource = new CancellationTokenSource();
+        _asyncWaitState = new SequencedAsyncWaitState(_cancellationTokenSource.Token, sequencer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | Constants.AggressiveOptimization)]
@@ -48,17 +50,18 @@ internal struct AsyncProcessingSequenceBarrier<TSequencer, TWaitStrategy> : IAsy
         return _sequencer.GetHighestPublishedSequence(sequence, result.UnsafeAvailableSequence);
     }
 
-    public async ValueTask<SequenceWaitResult> WaitForAsync(long sequence)
+    public ValueTask<SequenceWaitResult> WaitForAsync(long sequence)
     {
         var cancellationToken = _cancellationTokenSource.Token;
         cancellationToken.ThrowIfCancellationRequested();
 
-        var result = await _waitStrategy.WaitForAsync(sequence, _cursorSequence, _dependentSequence, cancellationToken).ConfigureAwait(false);
+        var cursorSequence = _cursorSequence.Value;
+        if (cursorSequence >= sequence)
+        {
+            return new ValueTask<SequenceWaitResult>(_sequencer.GetHighestPublishedSequence(sequence, cursorSequence));
+        }
 
-        if (result.UnsafeAvailableSequence < sequence)
-            return result;
-
-        return _sequencer.GetHighestPublishedSequence(sequence, result.UnsafeAvailableSequence);
+        return _waitStrategy.WaitForAsync(sequence, _cursorSequence, _dependentSequence, _asyncWaitState);
     }
 
     public long Cursor => _dependentSequence.Value;
@@ -75,11 +78,32 @@ internal struct AsyncProcessingSequenceBarrier<TSequencer, TWaitStrategy> : IAsy
         // has no finalizer and no unmanaged resources to release.
 
         _cancellationTokenSource = new CancellationTokenSource();
+        _asyncWaitState = new SequencedAsyncWaitState(_cancellationTokenSource.Token, _sequencer);
     }
 
     public void CancelProcessing()
     {
         _cancellationTokenSource.Cancel();
         _waitStrategy.SignalAllWhenBlocking();
+    }
+
+    private sealed class SequencedAsyncWaitState : AsyncWaitState
+    {
+        private readonly TSequencer _sequencer;
+
+        public SequencedAsyncWaitState(CancellationToken cancellationToken, TSequencer sequencer) : base(cancellationToken)
+        {
+            _sequencer = sequencer;
+        }
+
+        public override SequenceWaitResult GetAvailableSequence(long sequence, ISequence dependentSequence)
+        {
+            var result = base.GetAvailableSequence(sequence, dependentSequence);
+
+            if (result.UnsafeAvailableSequence < sequence)
+                return result;
+
+            return _sequencer.GetHighestPublishedSequence(sequence, result.UnsafeAvailableSequence);
+        }
     }
 }

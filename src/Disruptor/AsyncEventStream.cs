@@ -121,12 +121,14 @@ public class AsyncEventStream<T> : IAsyncEnumerable<EventBatch<T>>, IDisposable
         private readonly Sequence _sequence;
         private readonly CancellationTokenRegistration _cancellationTokenRegistration;
         private readonly CancellationTokenSource _linkedTokenSource;
+        private readonly AsyncWaitState _asyncWaitState;
 
         public Enumerator(AsyncEventStream<T> asyncEventStream, Sequence sequence, CancellationToken streamCancellationToken, CancellationToken enumeratorCancellationToken)
         {
             _asyncEventStream = asyncEventStream;
             _sequence = sequence;
             _linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(streamCancellationToken, enumeratorCancellationToken);
+            _asyncWaitState = new AsyncWaitState(_linkedTokenSource.Token);
 
             _cancellationTokenRegistration = _linkedTokenSource.Token.Register(x => ((IAsyncWaitStrategy)x!).SignalAllWhenBlocking(), asyncEventStream._waitStrategy);
         }
@@ -153,7 +155,7 @@ public class AsyncEventStream<T> : IAsyncEnumerable<EventBatch<T>>, IDisposable
 
                 _linkedTokenSource.Token.ThrowIfCancellationRequested();
 
-                var waitResult = await _asyncEventStream._waitStrategy.WaitForAsync(nextSequence, _asyncEventStream._cursorSequence, _asyncEventStream._gatingSequence, _linkedTokenSource.Token).ConfigureAwait(false);
+                var waitResult = await _asyncEventStream._waitStrategy.WaitForAsync(nextSequence, _asyncEventStream._cursorSequence, _asyncEventStream._gatingSequence, _asyncWaitState).ConfigureAwait(false);
                 if (waitResult.UnsafeAvailableSequence < nextSequence)
                     continue;
 
