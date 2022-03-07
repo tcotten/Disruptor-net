@@ -14,7 +14,7 @@ namespace Disruptor.Benchmarks.Reference;
 public class EventProcessorRef<T, TDataProvider, TSequenceBarrier, TEventHandler> : IEventProcessor<T>
     where T : class
     where TDataProvider : IDataProvider<T>
-    where TSequenceBarrier : ISequenceBarrier
+    where TSequenceBarrier : ISequenceBarrierRef
     where TEventHandler : IEventHandler<T>
 {
     // ReSharper disable FieldCanBeMadeReadOnly.Local (performance: the runtime type will be a struct)
@@ -170,7 +170,7 @@ public class EventProcessorRef<T, TDataProvider, TSequenceBarrier, TEventHandler
 
                 _sequence.SetValue(availableSequence);
             }
-            catch (OperationCanceledException) when (_sequenceBarrier.IsCancellationRequested())
+            catch (OperationCanceledException) when (_sequenceBarrier.CancellationToken.IsCancellationRequested)
             {
                 if (_runState != ProcessorRunStates.Running)
                 {

@@ -59,11 +59,22 @@ public class SingleProducerSequencer : ISequencer
         _isBlockingWaitStrategy = waitStrategy.IsBlockingStrategy;
     }
 
+    /// <inheritdoc cref="ISequencer.IsCursorPublished"/>
+    public bool IsCursorPublished => true;
 
     /// <inheritdoc cref="ISequencer.NewBarrier"/>
-    public ISequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
+    public SequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
     {
-        return ProcessingSequenceBarrierFactory.Create(this, _waitStrategy, _cursor, sequencesToTrack);
+        return new SequenceBarrier(this, _waitStrategy, _cursor, sequencesToTrack);
+    }
+
+    /// <inheritdoc cref="ISequencer.NewAsyncBarrier"/>
+    public AsyncSequenceBarrier NewAsyncBarrier(params ISequence[] sequencesToTrack)
+    {
+        if (_waitStrategy is not IAsyncWaitStrategy asyncWaitStrategy)
+            throw new InvalidOperationException($"Unable to create an async sequence barrier: the disruptor must be configured with an async wait strategy (e.g.: {nameof(AsyncWaitStrategy)}");
+
+        return new AsyncSequenceBarrier(this, asyncWaitStrategy, _cursor, sequencesToTrack);
     }
 
     /// <inheritdoc cref="ISequenced.BufferSize"/>.

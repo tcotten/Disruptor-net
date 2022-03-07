@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Disruptor.Processing;
 using Disruptor.Util;
 using static Disruptor.Util.Constants;
 
@@ -286,9 +287,20 @@ public abstract class RingBuffer : ICursored
     /// </summary>
     /// <param name="sequencesToTrack">the additional sequences to track</param>
     /// <returns>A sequence barrier that will track the specified sequences.</returns>
-    public ISequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
+    public SequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
     {
         return _sequencerDispatcher.Sequencer.NewBarrier(sequencesToTrack);
+    }
+
+    /// <summary>
+    /// Create a new SequenceBarrier to be used by an EventProcessor to track which messages
+    /// are available to be read from the ring buffer given a list of sequences to track.
+    /// </summary>
+    /// <param name="sequencesToTrack">the additional sequences to track</param>
+    /// <returns>A sequence barrier that will track the specified sequences.</returns>
+    public AsyncSequenceBarrier NewAsyncBarrier(params ISequence[] sequencesToTrack)
+    {
+        return _sequencerDispatcher.Sequencer.NewAsyncBarrier(sequencesToTrack);
     }
 
     /// <summary>

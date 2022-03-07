@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Disruptor.Processing;
 
 namespace Disruptor.PerfTests.Raw;
 
@@ -96,7 +97,7 @@ public class OneToOneRawThroughputTest_BatchPublisher : IThroughputTest
         private ManualResetEvent _latch;
         private long _expectedCount;
         public readonly Sequence Sequence = new(-1);
-        private readonly ISequenceBarrier _barrier;
+        private readonly SequenceBarrier _barrier;
 
         public MyRunnable(ISequencer sequencer)
         {

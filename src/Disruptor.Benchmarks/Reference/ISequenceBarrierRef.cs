@@ -1,21 +1,13 @@
-﻿using System;
-using System.Threading;
-using Disruptor.Processing;
+﻿using System.Threading;
 
-namespace Disruptor;
+namespace Disruptor.Benchmarks.Reference;
 
 /// <summary>
 /// Coordination barrier for tracking the cursor for producers and sequence of
 /// dependent <see cref="IEventProcessor"/>s for a <see cref="RingBuffer{T}"/>
 /// </summary>
-public interface ISequenceBarrier
+public interface ISequenceBarrierRef
 {
-    /// <summary>
-    /// Wait for the given sequence to be available for consumption.
-    /// </summary>
-    /// <param name="sequence">sequence to wait for</param>
-    /// <returns>the sequence up to which is available</returns>
-    /// <exception cref="OperationCanceledException">if a status change has occurred for the Disruptor</exception>
     SequenceWaitResult WaitFor(long sequence);
 
     /// <summary>

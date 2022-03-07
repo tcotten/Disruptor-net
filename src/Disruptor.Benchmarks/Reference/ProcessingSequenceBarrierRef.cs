@@ -3,21 +3,17 @@ using System.Threading;
 using Disruptor.Util;
 using JetBrains.Annotations;
 
-namespace Disruptor.Processing;
+namespace Disruptor.Benchmarks.Reference;
 
 /// <summary>
-/// <see cref="ISequenceBarrier"/> handed out for gating <see cref="IEventProcessor"/> on a cursor sequence and optional dependent <see cref="IEventProcessor"/>s,
+/// <see cref="ISequenceBarrierRef"/> handed out for gating <see cref="IEventProcessor"/> on a cursor sequence and optional dependent <see cref="IEventProcessor"/>s,
 ///  using the given WaitStrategy.
 /// </summary>
-/// <typeparam name="TSequencer">the type of the <see cref="ISequencer"/> used.</typeparam>
-/// <typeparam name="TWaitStrategy">the type of the <see cref="IWaitStrategy"/> used.</typeparam>
-internal struct ProcessingSequenceBarrier<TSequencer, TWaitStrategy> : ISequenceBarrier
-    where TWaitStrategy : IWaitStrategy
-    where TSequencer : ISequencer
+public class ProcessingSequenceBarrierRef : ISequenceBarrierRef
 {
     // ReSharper disable FieldCanBeMadeReadOnly.Local (performance: the runtime type will be a struct)
-    private TWaitStrategy _waitStrategy;
-    private TSequencer _sequencer;
+    private readonly ISequencer _sequencer;
+    private readonly IWaitStrategy _waitStrategy;
     // ReSharper restore FieldCanBeMadeReadOnly.Local
 
     private readonly ISequence _dependentSequence;
@@ -25,7 +21,7 @@ internal struct ProcessingSequenceBarrier<TSequencer, TWaitStrategy> : ISequence
     private volatile CancellationTokenSource _cancellationTokenSource;
 
     [UsedImplicitly]
-    public ProcessingSequenceBarrier(TSequencer sequencer, TWaitStrategy waitStrategy, Sequence cursorSequence, ISequence[] dependentSequences)
+    public ProcessingSequenceBarrierRef(ISequencer sequencer, IWaitStrategy waitStrategy, Sequence cursorSequence, ISequence[] dependentSequences)
     {
         _sequencer = sequencer;
         _waitStrategy = waitStrategy;

@@ -15,17 +15,17 @@ public class EventProcessorBenchmarks_Wait
     private const int _operationsPerInvoke = 1000;
 
     private readonly IPartialEventProcessor _processor1;
-    private readonly PartialEventProcessor<ValueSequenceBarrier, TimeoutDeactivated> _processor2;
+    private readonly PartialEventProcessor<TimeoutDeactivated> _processor2;
 
     public EventProcessorBenchmarks_Wait()
     {
         var sequencer = new SingleProducerSequencer(64, new YieldingWaitStrategy());
         var sequenceBarrierProxy = StructProxy.CreateProxyInstance(sequencer.NewBarrier());
-        var eventProcessorType = typeof(PartialEventProcessor<,>).MakeGenericType(sequenceBarrierProxy.GetType(), typeof(TimeoutDeactivated));
+        var eventProcessorType = typeof(PartialEventProcessor<>).MakeGenericType(sequenceBarrierProxy.GetType(), typeof(TimeoutDeactivated));
         _processor1 = (IPartialEventProcessor)Activator.CreateInstance(eventProcessorType, sequenceBarrierProxy, new TimeoutDeactivated());
 
         var cursorSequence = new Sequence();
-        _processor2 = new PartialEventProcessor<ValueSequenceBarrier, TimeoutDeactivated>(new ValueSequenceBarrier(sequencer, new YieldingWaitStrategy(), cursorSequence), default);
+        _processor2 = new PartialEventProcessor<TimeoutDeactivated>(new SequenceBarrier(sequencer, new YieldingWaitStrategy(), cursorSequence, new ISequence[0]), default);
 
         sequencer.Publish(42);
         cursorSequence.SetValue(42);
@@ -69,17 +69,16 @@ public class EventProcessorBenchmarks_Wait
     }
 
     /// <summary>
-    /// Partial copy of <see cref="EventProcessor{T, TDataProvider, TSequenceBarrier, TEventHandler, TBatchStartAware}"/>
+    /// Partial copy of <see cref="EventProcessor{T, TDataProvider, TEventHandler, TBatchStartAware}"/>
     /// </summary>
-    public sealed class PartialEventProcessor<TSequenceBarrier, TTimeoutActivation> : IPartialEventProcessor
-        where TSequenceBarrier : ISequenceBarrier
+    public sealed class PartialEventProcessor<TTimeoutActivation> : IPartialEventProcessor
         where TTimeoutActivation : ITimeoutActivation
     {
         private readonly Sequence _sequence = new();
-        private TSequenceBarrier _sequenceBarrier;
+        private SequenceBarrier _sequenceBarrier;
         private TTimeoutActivation _timeoutActivation;
 
-        public PartialEventProcessor(TSequenceBarrier sequenceBarrier, TTimeoutActivation timeoutActivation)
+        public PartialEventProcessor(SequenceBarrier sequenceBarrier, TTimeoutActivation timeoutActivation)
         {
             _sequenceBarrier = sequenceBarrier;
             _timeoutActivation = timeoutActivation;

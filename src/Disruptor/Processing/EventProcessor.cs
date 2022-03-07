@@ -17,19 +17,17 @@ namespace Disruptor.Processing;
 /// </remarks>
 /// <typeparam name="T">the type of event used.</typeparam>
 /// <typeparam name="TDataProvider">the type of the <see cref="IDataProvider{T}"/> used.</typeparam>
-/// <typeparam name="TSequenceBarrier">the type of the <see cref="ISequenceBarrier"/> used.</typeparam>
 /// <typeparam name="TEventHandler">the type of the <see cref="IEventHandler{T}"/> used.</typeparam>
 /// <typeparam name="TOnBatchStartEvaluator">the type of the <see cref="IOnBatchStartEvaluator"/> used.</typeparam>
-public class EventProcessor<T, TDataProvider, TSequenceBarrier, TEventHandler, TOnBatchStartEvaluator> : IEventProcessor<T>
+public class EventProcessor<T, TDataProvider, TEventHandler, TOnBatchStartEvaluator> : IEventProcessor<T>
     where T : class
     where TDataProvider : IDataProvider<T>
-    where TSequenceBarrier : ISequenceBarrier
     where TEventHandler : IEventHandler<T>
     where TOnBatchStartEvaluator : IOnBatchStartEvaluator
 {
     // ReSharper disable FieldCanBeMadeReadOnly.Local (performance: the runtime type will be a struct)
     private TDataProvider _dataProvider;
-    private TSequenceBarrier _sequenceBarrier;
+    private SequenceBarrier _sequenceBarrier;
     private TEventHandler _eventHandler;
     private TOnBatchStartEvaluator _onBatchStartEvaluator;
     // ReSharper restore FieldCanBeMadeReadOnly.Local
@@ -39,7 +37,7 @@ public class EventProcessor<T, TDataProvider, TSequenceBarrier, TEventHandler, T
     private IExceptionHandler<T> _exceptionHandler = new FatalExceptionHandler<T>();
     private volatile int _runState = ProcessorRunStates.Idle;
 
-    public EventProcessor(TDataProvider dataProvider, TSequenceBarrier sequenceBarrier, TEventHandler eventHandler, TOnBatchStartEvaluator onBatchStartEvaluator)
+    public EventProcessor(TDataProvider dataProvider, SequenceBarrier sequenceBarrier, TEventHandler eventHandler, TOnBatchStartEvaluator onBatchStartEvaluator)
     {
         _dataProvider = dataProvider;
         _sequenceBarrier = sequenceBarrier;

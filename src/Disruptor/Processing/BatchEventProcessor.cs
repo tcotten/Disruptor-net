@@ -17,17 +17,15 @@ namespace Disruptor.Processing;
 /// </remarks>
 /// <typeparam name="T">the type of event used.</typeparam>
 /// <typeparam name="TDataProvider">the type of the <see cref="IDataProvider{T}"/> used.</typeparam>
-/// <typeparam name="TSequenceBarrier">the type of the <see cref="ISequenceBarrier"/> used.</typeparam>
 /// <typeparam name="TEventHandler">the type of the <see cref="IBatchEventHandler{T}"/> used.</typeparam>
-public class BatchEventProcessor<T, TDataProvider, TSequenceBarrier, TEventHandler> : IEventProcessor<T>
+public class BatchEventProcessor<T, TDataProvider, TEventHandler> : IEventProcessor<T>
     where T : class
     where TDataProvider : IDataProvider<T>
-    where TSequenceBarrier : ISequenceBarrier
     where TEventHandler : IBatchEventHandler<T>
 {
     // ReSharper disable FieldCanBeMadeReadOnly.Local (performance: the runtime type will be a struct)
     private TDataProvider _dataProvider;
-    private TSequenceBarrier _sequenceBarrier;
+    private SequenceBarrier _sequenceBarrier;
     private TEventHandler _eventHandler;
     // ReSharper restore FieldCanBeMadeReadOnly.Local
 
@@ -36,7 +34,7 @@ public class BatchEventProcessor<T, TDataProvider, TSequenceBarrier, TEventHandl
     private IExceptionHandler<T> _exceptionHandler = new FatalExceptionHandler<T>();
     private volatile int _runState = ProcessorRunStates.Idle;
 
-    public BatchEventProcessor(TDataProvider dataProvider, TSequenceBarrier sequenceBarrier, TEventHandler eventHandler)
+    public BatchEventProcessor(TDataProvider dataProvider, SequenceBarrier sequenceBarrier, TEventHandler eventHandler)
     {
         _dataProvider = dataProvider;
         _sequenceBarrier = sequenceBarrier;

@@ -99,5 +99,5 @@ public class ValueEventHandlerGroup<T>
     /// <see cref="IValueEventProcessor{T}"/>s created by the disruptor.
     /// </summary>
     /// <returns>a <see cref="ISequenceBarrier"/> including all the processors in this group.</returns>
-    public ISequenceBarrier AsSequenceBarrier() => _disruptor.RingBuffer.NewBarrier(_sequences);
+    public SequenceBarrier AsSequenceBarrier() => _disruptor.RingBuffer.NewBarrier(_sequences);
 }

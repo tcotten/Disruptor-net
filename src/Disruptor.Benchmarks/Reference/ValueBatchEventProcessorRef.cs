@@ -11,7 +11,7 @@ public class ValueBatchEventProcessorRef<T, TDataProvider, TSequenceBarrier, TEv
     where T : struct
 
     where TDataProvider : IValueDataProvider<T>
-    where TSequenceBarrier : ISequenceBarrier
+    where TSequenceBarrier : ISequenceBarrierRef
     where TEventHandler : IValueEventHandler<T>
 {
     private static class RunningStates
@@ -166,7 +166,7 @@ public class ValueBatchEventProcessorRef<T, TDataProvider, TSequenceBarrier, TEv
 
                 _sequence.SetValue(availableSequence);
             }
-            catch (OperationCanceledException) when (_sequenceBarrier.IsCancellationRequested())
+            catch (OperationCanceledException) when (_sequenceBarrier.CancellationToken.IsCancellationRequested)
             {
                 if (_running != RunningStates.Running)
                 {

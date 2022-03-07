@@ -20,11 +20,11 @@ public class PingPongSequencedLatencyTest : ILatencyTest
     private readonly RingBuffer<PerfEvent> _pingBuffer;
     private readonly RingBuffer<PerfEvent> _pongBuffer;
 
-    private readonly ISequenceBarrier _pongBarrier;
+    private readonly SequenceBarrier _pongBarrier;
     private readonly Pinger _pinger;
     private readonly IEventProcessor<PerfEvent> _pingProcessor;
 
-    private readonly ISequenceBarrier _pingBarrier;
+    private readonly SequenceBarrier _pingBarrier;
     private readonly Ponger _ponger;
     private readonly IEventProcessor<PerfEvent> _pongProcessor;
 

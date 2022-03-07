@@ -1,11 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Disruptor.Processing;
 
 namespace Disruptor.Benchmarks;
 
 public class RingBufferPublicationBenchmarks
 {
     private readonly RingBuffer<Event> _ringBuffer;
-    private ISequenceBarrier _sequenceBarrier;
+    private SequenceBarrier _sequenceBarrier;
 
     public RingBufferPublicationBenchmarks()
     {
