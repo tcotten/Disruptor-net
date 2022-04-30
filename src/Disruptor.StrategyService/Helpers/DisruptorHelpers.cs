@@ -46,4 +46,16 @@ public static class DisruptorHelpers
         }
     }
 
+    //internal sealed class DefaultBatchEventHandler : IDisruptorServiceBuilder
+    //{
+    //    public DefaultBatchEventHandler(IServiceCollection services)
+    //    {
+    //        Services = services ?? throw new ArgumentNullException(nameof(services));
+    //        Instances = new List<IBatchEventHandler>();
+    //    }
+
+    //    public IServiceCollection Services { get; set; }
+    //    public List<IBatchEventHandler> Instances { get; set; }
+    //}
+
 }

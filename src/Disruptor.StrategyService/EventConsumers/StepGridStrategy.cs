@@ -5,18 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Disruptor.StrategyService.EventConsumers
+namespace Disruptor.StrategyService.EventConsumers;
+public interface IStepGridStrategy : IBatchEventHandler<TickerEvent> { }
+public class StepGridStrategy : IStepGridStrategy
 {
-    public class StepGridStrategy : IBatchEventHandler<TickerEvent>
+    public void OnBatch(EventBatch<TickerEvent> batch, long sequence)
     {
-        public void OnBatch(EventBatch<TickerEvent> batch, long sequence)
-        {
-            var data = batch[0];
-            Console.WriteLine($"StepGridStrategy Batch - Count: {batch.Length} Seq: {sequence}");
-            Console.WriteLine($"StepGridStrategy Item[0] - Seq: {sequence} Low: {data.low} High: {data.high} Open: {data.open} Close: {data.close} Vol: {data.volume} Trans: {data.transactions}");
-            //batch.ToArray().ToList().ForEach(data =>
-            //    Console.WriteLine($"StepGridStrategy - Seq: {sequence} Low: {data.low} High: {data.high} Open: {data.open} Close: {data.close} Vol: {data.volume} Trans: {data.transactions}")
-            //);
-        }
+        var data = batch[0];
+        Console.WriteLine($"StepGridStrategy Batch - Count: {batch.Length} Seq: {sequence}");
+        Console.WriteLine($"StepGridStrategy Item[0] - Seq: {sequence} Low: {data.low} High: {data.high} Open: {data.open} Close: {data.close} Vol: {data.volume} Trans: {data.transactions}");
+        //batch.ToArray().ToList().ForEach(data =>
+        //    Console.WriteLine($"StepGridStrategy - Seq: {sequence} Low: {data.low} High: {data.high} Open: {data.open} Close: {data.close} Vol: {data.volume} Trans: {data.transactions}")
+        //);
     }
 }

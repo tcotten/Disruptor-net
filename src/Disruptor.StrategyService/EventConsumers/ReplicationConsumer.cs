@@ -6,10 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Disruptor.StrategyService.EventConsumers;
+public interface IReplicationConsumer : IBatchEventHandler<TickerEvent> { }
 /// <summary>
 /// Replicate the event for live/live and DR operations. Including the sequence allows for exact replication to other instances.
 /// </summary>
-public class ReplicationConsumer : IBatchEventHandler<TickerEvent>
+public class ReplicationConsumer : IReplicationConsumer
 {
     public void OnBatch(EventBatch<TickerEvent> batch, long sequence)
     {

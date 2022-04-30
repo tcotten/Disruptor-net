@@ -14,7 +14,8 @@ namespace Disruptor.StrategyService.Tests
         public Task CypherConnectionTest()
         {
             //var neoClient = new GraphClient(new Uri("http://neo4j:Avalanch3@172.2.96.1:7474/db/data"));
-            var neoClient = new GraphClient(new Uri("http://neo4j:Avalanch3@192.168.1.60:7474"));
+            //var neoClient = new GraphClient(new Uri("http://neo4j:Avalanch3@192.168.1.60:7474"));
+            var neoClient = new BoltGraphClient(new Uri("neo4j://192.168.1.60:7687"), "neo4j", "Avalanch3");
             //var config = new NeoServerConfiguration();
 
             neoClient.ConnectAsync().GetAwaiter().GetResult();
