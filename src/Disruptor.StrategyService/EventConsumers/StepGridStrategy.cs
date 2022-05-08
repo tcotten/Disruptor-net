@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Disruptor.StrategyService.EventConsumers;
-public interface IStepGridStrategy : IBatchEventHandler<TickerEvent> { }
+public interface IStepGridStrategy : IBatchEventHandler<PairCandle> { }
 public class StepGridStrategy : IStepGridStrategy
 {
-    public void OnBatch(EventBatch<TickerEvent> batch, long sequence)
+    public void OnBatch(EventBatch<PairCandle> batch, long sequence)
     {
         var data = batch[0];
         Console.WriteLine($"StepGridStrategy Batch - Count: {batch.Length} Seq: {sequence}");

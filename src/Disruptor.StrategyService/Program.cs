@@ -17,19 +17,19 @@ using IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IJournalConsumer, JournalConsumer>();
         services.AddSingleton<IReplicationConsumer, ReplicationConsumer>();
         services.AddSingleton<IStepGridStrategy, StepGridStrategy>();
-        services.AddSingleton<Disruptor<TickerEvent>>(provider =>
+        services.AddSingleton<Disruptor<PairCandle>>(provider =>
         {
             var journalConsumer = provider.GetRequiredService<IJournalConsumer>();
             var replicationConsumer = provider.GetRequiredService<IReplicationConsumer>();
             var stepGridStrategy = provider.GetRequiredService<IStepGridStrategy>();
-            var disruptor = new Disruptor<TickerEvent>(() => new TickerEvent(), 33554432);
+            var disruptor = new Disruptor<PairCandle>(() => new PairCandle(), 33554432);
             disruptor.HandleEventsWith(replicationConsumer, journalConsumer).Then(stepGridStrategy);
 
             return disruptor;
         });
         services.AddSingleton(provider =>
         {
-            var disruptor = provider.GetRequiredService<Disruptor<TickerEvent>>();
+            var disruptor = provider.GetRequiredService<Disruptor<PairCandle>>();
             return new DisruptorExecution(disruptor);
         });
         //services.AddSingleton<IGraphClientFactory>(new GraphClientFactory())

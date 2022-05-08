@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Disruptor.StrategyService.Producers;
 
-internal class TickerProducer : IValueProducer<TickerEvent>
+internal class TickerProducer : IValueProducer<PairCandle>
 {
     // TODO: Read a file with past data and send it to the disruptor
     // 1438956180,3.0,3.0,3.0,3.0,81.85727776,2
@@ -18,9 +18,9 @@ internal class TickerProducer : IValueProducer<TickerEvent>
         transactionFile = new FileInfo(transactionSourceFilePath);
     }
 
-    public void ProduceEvents(Action<TickerEvent> createTickerAction)
+    public void ProduceEvents(Action<PairCandle> createTickerAction)
     {
-        List<TickerEvent> transactions = File.ReadAllLines(transactionFile.FullName).Select(v => TickerEvent.FromCSV(v)).ToList();
+        List<PairCandle> transactions = File.ReadAllLines(transactionFile.FullName).Select(v => PairCandle.FromCSV(v)).ToList();
         //transactions.ForEach(t => createTickerAction.Invoke(t));
         int counter = 0;
         foreach (var transaction in transactions)
@@ -31,9 +31,9 @@ internal class TickerProducer : IValueProducer<TickerEvent>
         }
     }
 
-    public void ProduceEvents(Action<List<TickerEvent>> createTickerAction)
+    public void ProduceEvents(Action<List<PairCandle>> createTickerAction)
     {
-        List<TickerEvent> transactions = File.ReadAllLines(transactionFile.FullName).Select(v => TickerEvent.FromCSV(v)).ToList();
+        List<PairCandle> transactions = File.ReadAllLines(transactionFile.FullName).Select(v => PairCandle.FromCSV(v)).ToList();
         int batchSize = 1000;
         //int batchesToSend = (int)Math.Floor(Convert.ToDecimal(transactions.Count() / batchSize));
         int batchesToSend = 10;

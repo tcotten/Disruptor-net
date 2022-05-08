@@ -39,9 +39,9 @@ namespace Disruptor.StrategyService
 
     public class DisruptorExecution
     {
-        private Disruptor<TickerEvent> disruptor;
+        private Disruptor<PairCandle> disruptor;
         public bool IsStarted { get { return disruptor != null && disruptor.HasStarted; } }
-        public DisruptorExecution(Disruptor<TickerEvent> disruptor)
+        public DisruptorExecution(Disruptor<PairCandle> disruptor)
         {
             this.disruptor = disruptor;
         }

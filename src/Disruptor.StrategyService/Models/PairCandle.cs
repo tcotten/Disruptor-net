@@ -6,21 +6,27 @@ using System.Threading.Tasks;
 
 namespace Disruptor.StrategyService.Models;
 
-public record class TickerEvent
+public record class PairCandle : GraphModelBaseRecord
 {
-    public long unixTimestamp;
-    public double open;
-    public double high;
-    public double low;
-    public double close;
-    public double volume;
-    public long transactions;
-    public static TickerEvent FromCSV(string csvLine)
+    public PairCandle() : base() { }
+    public PairCandle(long unixTimeStampUTC) : base(unixTimeStampUTC) { }
+
+    /// <summary>
+    /// This is the unixTimestamp milliseconds UTC value.
+    /// </summary>
+    public long CandleTS { get; set; }
+    public double open { get; set; }
+    public double high { get; set; }
+    public double low { get; set; }
+    public double close { get; set; }
+    public double volume { get; set; }
+    public long transactions { get; set; }
+    public static PairCandle FromCSV(string csvLine)
     {
         string[] values = csvLine.Split(',');
-        var tickerEvent = new TickerEvent()
+        var tickerEvent = new PairCandle(values[0].ToInt64())
         {
-            unixTimestamp = values[0].ToInt64(),
+            CandleTS = values[0].ToInt64(),
             open = values[1].ToDouble(),
             high = values[2].ToDouble(),
             low = values[3].ToDouble(),

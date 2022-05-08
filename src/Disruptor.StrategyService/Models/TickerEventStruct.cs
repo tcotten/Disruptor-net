@@ -15,12 +15,12 @@ public record struct TickerEventStruck
     public double close;
     public double volume;
     public long transactions;
-    public static TickerEvent FromCSV(string csvLine)
+    public static PairCandle FromCSV(string csvLine)
     {
         string[] values = csvLine.Split(',');
-        var tickerEvent = new TickerEvent()
+        var tickerEvent = new PairCandle()
         {
-            unixTimestamp = values[0].ToInt64(),
+            CandleTS = values[0].ToInt64(),
             open = values[1].ToInt64(),
             high = values[2].ToInt64(),
             low = values[3].ToInt64(),

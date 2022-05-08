@@ -9,12 +9,12 @@ namespace Disruptor.StrategyService;
 
 public static class DisruptorHelpers
 {
-    public static void PublishTickerEvent(this Dsl.Disruptor<TickerEvent> disruptor, TickerEvent eventToPublish)
+    public static void PublishTickerEvent(this Dsl.Disruptor<PairCandle> disruptor, PairCandle eventToPublish)
     {
         using (var unpublishedEventScope = disruptor.PublishEvent())
         {
             var evt = unpublishedEventScope.Event();
-            evt.unixTimestamp = eventToPublish.unixTimestamp;
+            evt.CandleTS = eventToPublish.CandleTS;
             evt.low = eventToPublish.low;
             evt.high = eventToPublish.high;
             evt.open = eventToPublish.open;
@@ -24,7 +24,7 @@ public static class DisruptorHelpers
         }
     }
 
-    public static void PublishTickerEvents(this Dsl.Disruptor<TickerEvent> disruptor, IEnumerable<TickerEvent> eventsToPublish)
+    public static void PublishTickerEvents(this Dsl.Disruptor<PairCandle> disruptor, IEnumerable<PairCandle> eventsToPublish)
     {
         if (eventsToPublish == null || eventsToPublish.Count() == 0) return;
 
@@ -34,7 +34,7 @@ public static class DisruptorHelpers
             foreach (var eventToPublish in eventsToPublish)
             {
                 var evt = unpublishedEventScope.Event(i);
-                evt.unixTimestamp = eventToPublish.unixTimestamp;
+                evt.CandleTS = eventToPublish.CandleTS;
                 evt.low = eventToPublish.low;
                 evt.high = eventToPublish.high;
                 evt.open = eventToPublish.open;
