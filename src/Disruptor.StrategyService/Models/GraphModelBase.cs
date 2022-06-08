@@ -75,13 +75,7 @@ public static class GraphModelBaseExtensions
     {
         long unixTimeStamp = unixTimeStampUTC.HasValue ? unixTimeStampUTC.Value : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         // If the timestamp is less than 13 then it is most likely seconds instead of milliseconds
-        int tmpLen = unixTimeStamp.ToString().Length;
-        int tmpNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString().Length;
-        if (tmpLen < tmpNow)
-        {
-            int mult = (int)Math.Pow(10, (tmpNow - tmpLen));
-            unixTimeStamp *= mult;
-        }
+        unixTimeStamp = unixTimeStamp.ValidateUnixTimeStamp();
 
         if (graphRecord.CreatedTS == default) graphRecord.CreatedTS = unixTimeStamp;
         if (graphRecord.CreatedLocal == default) graphRecord.CreatedLocal = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeStamp).UtcDateTime.ToLocalTime();
@@ -90,5 +84,17 @@ public static class GraphModelBaseExtensions
         graphRecord.LastUpdatedUTC = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeStamp).UtcDateTime;
 
         return graphRecord;
+    }
+
+    public static long ValidateUnixTimeStamp(this long unixTimeStamp)
+    {
+        int tmpLen = unixTimeStamp.ToString().Length;
+        int tmpNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString().Length;
+        if (tmpLen < tmpNow)
+        {
+            int mult = (int)Math.Pow(10, (tmpNow - tmpLen));
+            unixTimeStamp *= mult;
+        }
+        return unixTimeStamp;
     }
 }

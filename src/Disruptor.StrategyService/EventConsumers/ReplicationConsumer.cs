@@ -16,7 +16,7 @@ public class ReplicationConsumer : IReplicationConsumer
     {
         var data = batch[0];
         Console.WriteLine($"Replicate Batch - Count: {batch.Length} Seq: {sequence}");
-        Console.WriteLine($"Replicate Item[0] - Seq: {sequence} Low: {data.low} High: {data.high} Open: {data.open} Close: {data.close} Vol: {data.volume} Trans: {data.transactions}");
+        Console.WriteLine($"Replicate Item[0] - Seq: {sequence} Low: {data.Low} High: {data.High} Open: {data.Open} Close: {data.Close} Vol: {data.Volume} Trans: {data.Transactions}");
         //batch.ToArray().ToList().ForEach(data =>
         //    Console.WriteLine($"Replicate - Seq: {sequence} Low: {data.low} High: {data.high} Open: {data.open} Close: {data.close} Vol: {data.volume} Trans: {data.transactions}")
         //);

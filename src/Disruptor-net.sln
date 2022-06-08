@@ -27,7 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Disruptor.MyTests", "Disrup
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Disruptor.StrategyService", "Disruptor.StrategyService\Disruptor.StrategyService.csproj", "{BE8335BD-DF11-430F-AE19-64B29F66725B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disruptor.StrategyService.Tests", "Disruptor.StrategyService.Tests\Disruptor.StrategyService.Tests.csproj", "{97D1A726-2F18-47B7-8401-F9E1AA49E56D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Disruptor.StrategyService.Tests", "Disruptor.StrategyService.Tests\Disruptor.StrategyService.Tests.csproj", "{97D1A726-2F18-47B7-8401-F9E1AA49E56D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Disruptor.EncryptDecrypt", "Disruptor.EncryptDecrypt.Console\Disruptor.EncryptDecrypt.csproj", "{23226669-2ED7-4622-8EC5-BDCE35273EAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CollectorService.Kraken", "CollectorService.Kraken\CollectorService.Kraken.csproj", "{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +163,30 @@ Global
 		{97D1A726-2F18-47B7-8401-F9E1AA49E56D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{97D1A726-2F18-47B7-8401-F9E1AA49E56D}.Release|x86.ActiveCfg = Release|Any CPU
 		{97D1A726-2F18-47B7-8401-F9E1AA49E56D}.Release|x86.Build.0 = Release|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Debug|x86.Build.0 = Debug|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Release|x86.ActiveCfg = Release|Any CPU
+		{23226669-2ED7-4622-8EC5-BDCE35273EAC}.Release|x86.Build.0 = Release|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Debug|x86.Build.0 = Debug|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Release|x86.ActiveCfg = Release|Any CPU
+		{0FA54EB5-601A-491F-BC4A-7605B5AAF40F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

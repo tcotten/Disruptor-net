@@ -21,12 +21,12 @@ public record struct TickerEventStruck
         var tickerEvent = new PairCandle()
         {
             CandleTS = values[0].ToInt64(),
-            open = values[1].ToInt64(),
-            high = values[2].ToInt64(),
-            low = values[3].ToInt64(),
-            close = values[4].ToInt64(),
-            volume = values[5].ToInt64(),
-            transactions = values[6].ToInt64()
+            Open = values[1].ToInt64(),
+            High = values[2].ToInt64(),
+            Low = values[3].ToInt64(),
+            Close = values[4].ToInt64(),
+            Volume = values[5].ToInt64(),
+            Transactions = values[6].ToInt64()
         };
         return tickerEvent;
     }

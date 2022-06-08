@@ -217,12 +217,12 @@ namespace Disruptor.StrategyService.Tests
             //c2.open = 1915.7, c2.high = 1918.89, c2.low = 1915.7, c2.close = 1918.89, c2.volume = 6.21153841, c2.transactions = 20
             var pairCandle = new PairCandle() {
                 CandleTS = 1617235140,
-                open = 1915.7,
-                high = 1918.89,
-                low = 1915.7,
-                close = 1918.89,
-                volume = 6.21153841,
-                transactions = 20
+                Open = 1915.7m,
+                High = 1918.89m,
+                Low = 1915.7m,
+                Close = 1918.89m,
+                Volume = 6.21153841m,
+                Transactions = 20
             };
             // Make sure the base data has been populated
             if (pairCandle.TimeUUID == default)

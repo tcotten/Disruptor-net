@@ -15,12 +15,12 @@ public static class DisruptorHelpers
         {
             var evt = unpublishedEventScope.Event();
             evt.CandleTS = eventToPublish.CandleTS;
-            evt.low = eventToPublish.low;
-            evt.high = eventToPublish.high;
-            evt.open = eventToPublish.open;
-            evt.close = eventToPublish.close;
-            evt.volume = eventToPublish.volume;
-            evt.transactions = eventToPublish.transactions;
+            evt.Low = eventToPublish.Low;
+            evt.High = eventToPublish.High;
+            evt.Open = eventToPublish.Open;
+            evt.Close = eventToPublish.Close;
+            evt.Volume = eventToPublish.Volume;
+            evt.Transactions = eventToPublish.Transactions;
         }
     }
 
@@ -35,12 +35,12 @@ public static class DisruptorHelpers
             {
                 var evt = unpublishedEventScope.Event(i);
                 evt.CandleTS = eventToPublish.CandleTS;
-                evt.low = eventToPublish.low;
-                evt.high = eventToPublish.high;
-                evt.open = eventToPublish.open;
-                evt.close = eventToPublish.close;
-                evt.volume = eventToPublish.volume;
-                evt.transactions = eventToPublish.transactions;
+                evt.Low = eventToPublish.Low;
+                evt.High = eventToPublish.High;
+                evt.Open = eventToPublish.Open;
+                evt.Close = eventToPublish.Close;
+                evt.Volume = eventToPublish.Volume;
+                evt.Transactions = eventToPublish.Transactions;
                 i++;
             }
         }
